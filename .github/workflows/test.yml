@@ -50,8 +50,8 @@ jobs:
         run: |
           allure generate allure-results --clean -o allure-report
 
-      - name: Deploy report to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           token: ${{ secrets.CI_TOKEN }}
           branch: gh-pages
