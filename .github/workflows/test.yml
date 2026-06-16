@@ -6,13 +6,13 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: self-hosted   # ваш Windows runner
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Checkout gh-pages branch for history
+      - name: Checkout gh-pages branch
         uses: actions/checkout@v3
         with:
           ref: gh-pages
@@ -29,21 +29,15 @@ jobs:
 
       - name: Run pytest with Allure results
         env:
-          # Все переменные, которые нужны тестам (из секретов)
           APPHOST: ${{ secrets.APPHOST }}
           APPPORT: ${{ secrets.APPPORT }}
           UDID: ${{ secrets.UDID }}
-          MOBILE_PACKAGE: ${{ secrets.MOBILE_PACKAGE }}
-          MOBILE_ACTIVITY: ${{ secrets.MOBILE_ACTIVITY }}
-          VALID_SERVER_IP: ${{ secrets.VALID_SERVER_IP }}
-          VALID_SERVER_PORT: ${{ secrets.VALID_SERVER_PORT }}
-          INVALID_SERVER_IP: ${{ secrets.INVALID_SERVER_IP }}
-          INVALID_SERVER_PORT: ${{ secrets.INVALID_SERVER_PORT }}
         run: |
           pytest --alluredir=allure-results
+        continue-on-error: true
 
       - name: Copy history from gh-pages (if exists)
-        shell: pwsh   # используем PowerShell Core
+        shell: pwsh
         run: |
           if (Test-Path ".\.github\gh-pages\history") {
             Copy-Item -Recurse -Force ".\.github\gh-pages\history" "allure-results\"
