@@ -1,15 +1,22 @@
-name: Run Mobile Tests
+name: Run Mobile Tests with Allure Report
 
 on:
   push:
-  workflow_dispatch:  # позволяет запускать вручную
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: self-hosted
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Checkout gh-pages branch for history
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: ./.github/gh-pages
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -20,9 +27,39 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run pytest
+      - name: Run pytest with Allure results
         env:
+          # Все переменные, которые нужны тестам (из секретов)
           APPHOST: ${{ secrets.APPHOST }}
           APPPORT: ${{ secrets.APPPORT }}
           UDID: ${{ secrets.UDID }}
-        run: pytest -v
+          MOBILE_PACKAGE: ${{ secrets.MOBILE_PACKAGE }}
+          MOBILE_ACTIVITY: ${{ secrets.MOBILE_ACTIVITY }}
+          VALID_SERVER_IP: ${{ secrets.VALID_SERVER_IP }}
+          VALID_SERVER_PORT: ${{ secrets.VALID_SERVER_PORT }}
+          INVALID_SERVER_IP: ${{ secrets.INVALID_SERVER_IP }}
+          INVALID_SERVER_PORT: ${{ secrets.INVALID_SERVER_PORT }}
+        run: |
+          pytest --alluredir=allure-results
+
+      - name: Copy history from gh-pages (if exists)
+        shell: pwsh   # используем PowerShell Core
+        run: |
+          if (Test-Path ".\.github\gh-pages\history") {
+            Copy-Item -Recurse -Force ".\.github\gh-pages\history" "allure-results\"
+          } else {
+            Write-Host "No existing history found, starting fresh"
+          }
+
+      - name: Generate Allure report
+        shell: pwsh
+        run: |
+          allure generate allure-results --clean -o allure-report
+
+      - name: Deploy report to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          branch: gh-pages
+          folder: allure-report
+          clean: true
