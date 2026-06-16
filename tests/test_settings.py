@@ -16,7 +16,7 @@ class TestSettings:
             settings_page.enter_port_and_save("0000")
 
         with allure.step("Проверка связи с неверными данными"):
-            settings_page.swipe_up(0.4)
+            settings_page.swipe_up(0.1)
             settings_page.tap_check_connection_button()
             settings_page.unsuccess_check_connection_is_displayed()
 
@@ -26,7 +26,7 @@ class TestSettings:
             settings_page.enter_port_and_save("8125")
 
         with allure.step("Проверка связи с корректными данными"):
-            settings_page.swipe_up(0.4)
+            settings_page.swipe_up(0.1)
             settings_page.tap_check_connection_button()
             settings_page.success_check_connection_is_displayed()
 

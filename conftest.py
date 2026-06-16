@@ -32,6 +32,7 @@ def driver():
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
+
     if report.when == "call" and report.failed:
         driver = item.funcargs.get("driver")
         if driver:
@@ -40,6 +41,10 @@ def pytest_runtest_makereport(item, call):
                 name="screenshot_on_fail",
                 attachment_type=allure.attachment_type.PNG
             )
+
+        excinfo = call.excinfo
+        if excinfo:
+            report.longrepr = f"{excinfo.typename}: {excinfo.value}"
 
 @pytest.fixture
 def settings_page(driver):
