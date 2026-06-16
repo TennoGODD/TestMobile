@@ -1,19 +1,25 @@
-name: Run Mobile Tests and Publish Allure Report
+name: Run Mobile Tests with Allure Report
 
 on:
   push:
-    branches: [ main ]
-  # или ручной запуск
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: self-hosted   # твой собственный раннер
+    runs-on: self-hosted
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Checkout gh-pages branch (for history)
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: ./.github/gh-pages
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
@@ -21,25 +27,33 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Start Appium server (background)
-        run: |
-          appium --log-level error &
-          sleep 5  # дать время на запуск
-        # или используй appium server, если он уже висит на машине
-
-      - name: Run tests with Allure results
+      - name: Run pytest with Allure results
+        env:
+          APPHOST: ${{ secrets.APPHOST }}
+          APPPORT: ${{ secrets.APPPORT }}
+          UDID: ${{ secrets.UDID }}
         run: |
           pytest --alluredir=allure-results
-        continue-on-error: true   # чтобы отчёт сгенерировался даже при падениях
+        continue-on-error: true
+
+      - name: Copy history from gh-pages (if exists)
+        shell: powershell
+        run: |
+          if (Test-Path ".\.github\gh-pages\history") {
+            Copy-Item -Recurse -Force ".\.github\gh-pages\history" "allure-results\"
+          } else {
+            Write-Host "No existing history found, starting fresh"
+          }
 
       - name: Generate Allure report
+        shell: powershell
         run: |
           allure generate allure-results --clean -o allure-report
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CI_TOKEN }}
           publish_dir: ./allure-report
-          destination_dir: ./  # или например ./report
-          keep_files: false    # зачищать старые файлы
+          publish_branch: gh-pages
+          force_orphan: true
