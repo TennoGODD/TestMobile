@@ -6,13 +6,13 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted   # ваш Windows runner
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Checkout gh-pages branch
+      - name: Checkout gh-pages branch (for history)
         uses: actions/checkout@v3
         with:
           ref: gh-pages
@@ -37,7 +37,7 @@ jobs:
         continue-on-error: true
 
       - name: Copy history from gh-pages (if exists)
-        shell: pwsh
+        shell: powershell
         run: |
           if (Test-Path ".\.github\gh-pages\history") {
             Copy-Item -Recurse -Force ".\.github\gh-pages\history" "allure-results\"
@@ -46,7 +46,7 @@ jobs:
           }
 
       - name: Generate Allure report
-        shell: pwsh
+        shell: powershell
         run: |
           allure generate allure-results --clean -o allure-report
 
