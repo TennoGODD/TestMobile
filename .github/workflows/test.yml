@@ -30,15 +30,15 @@ jobs:
           python -m pip install -r requirements.txt
 
       - name: Create connection_config.ini for TestIT
-        shell: bash
+        shell: powershell
         run: |
-          cat > connection_config.ini <<EOF
+          @"
           [testit]
           url = ${{ secrets.TMS_URL }}
           projectId = ${{ secrets.TMS_PROJECT_ID }}
           adapterMode = 2
           configurationId = ${{ secrets.TMS_CONFIGURATION_ID }}
-          EOF
+          "@ | Out-File -FilePath connection_config.ini -Encoding utf8
 
       - name: Run pytest with TestIT and Allure
         env:
