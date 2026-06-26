@@ -47,7 +47,7 @@ jobs:
           APPPORT: ${{ secrets.APPPORT }}
           UDID: ${{ secrets.UDID }}
         run: |
-          pytest --testit --alluredir=allure-results
+          python -m pytest --testit --alluredir=allure-results
         continue-on-error: true
 
       - name: Copy history from gh-pages (if exists)
