@@ -8,8 +8,6 @@ from appium.webdriver.common.appiumby import AppiumBy as By
 class SettingsPage(BasePage):
     CONTENT_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.ViewGroup").instance(2)')
 
-    SETTINGS_TITLE = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Настройки")')
-
     WARNING_FIELD_1 = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Введите адрес сервера, для продложения работы")')
     WARNING_FIELD_2 = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Внимание! Не удалось подключиться к серверу!")')
 
@@ -133,12 +131,15 @@ class SettingsPage(BasePage):
         },
         "23r2, 07.04.26": {
             "header": (By.ACCESSIBILITY_ID, "23r2, 07.04.26"),
-            "details": (By.ANDROID_UIAUTOMATOR,
-                        'new UiSelector().text("- Исправлено, когда новые версии ТСД не отображались в ЛК DMC")'),
+            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено, когда новые версии ТСД не отображались в ЛК DMC")'),
         },
         "24, 30.04.26": {
             "header": (By.ACCESSIBILITY_ID, "24, 30.04.26"),
             "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено когда product0 не брался, если в конце строки не было переноса")'),
+        },
+        "25, 09.06.26": {
+            "header": (By.ACCESSIBILITY_ID, "25, 09.06.26"),
+            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено, если описание в карточке продукции было написано в одну строку, а в шаблоне присутствовала переменная с индексом более 0, печать не происходила")'),
         },
     }
 
@@ -153,6 +154,52 @@ class SettingsPage(BasePage):
     SAVE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("СОХРАНИТЬ")')
     CLOSE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ОТМЕНИТЬ")')
 
+    @allure.step("Проверить наличие всех элементов на странице настроек")
+    def verify_all_settings_elements_present(self, device_id=None):
+        elements = [
+            ("Кнопка «Проверка связи»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ПРОВЕРКА СВЯЗИ")')),
+            ("Кнопка «Список исправлений по версиям»", (By.ACCESSIBILITY_ID, "СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ")),
+            ("Кнопка «Изменить стартовую страницу»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ИЗМЕНИТЬ СТАРТОВУЮ СТРАНИЦУ")')),
+            ("Адрес сервера", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Адрес сервера:")')),
+            ("Порт сервера", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Порт сервера:")')),
+            ("Порт сервиса печати", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Порт сервиса печати:")')),
+            ("Переключатель «Проверять структуру кода»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Проверять структуру кода")')),
+            ("Переключатель «Использовать камеру для сканирования»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать камеру для сканирования")')),
+            ("Переключатель «Автоматическое считывание через камеру»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Автоматическое считывание через камеру")')),
+            ("Переключатель «Автоматически завершать задание»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Автоматически завершать задание")')),
+            ("Переключатель «Разрешить сериализацию, если статус задания готов к печати или идёт печать»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить сериализацию, если статус задания готов к печати или идёт печать")')),
+            ("Переключатель «Контролировать печать агрегата»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контролировать печать агрегата")')),
+            ("Переключатель «Режим работы с отсканированными кодами»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Режим работы c отсканированными кодами")')),
+            ("Переключатель «Контроль изменений при быстрой агрегации»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контроль изменений при быстром изменении агрегата")')),
+            ("Переключатель «Разрешить изменять агрегат введенных в оборот и нанесенных (не для быстрого)»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить изменять агрегат введённых в оборот и нанесённых (не для быстрого)")')),
+            ("Разрешить типографские коды агрегата", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить типографские коды агрегата")')),
+            ("Отображать поле ввода веса поддона", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Отображать поле ввода веса поддона")')),
+            ("Переключатель «Контролировать печать наборов»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контролировать печать наборов")')),
+            ("ezpl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().description("ezpl")')),
+            ("tspl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().description("tspl")')),
+            ("zpl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("zpl")')),
+            ("Использовать свободный шаблон при агрегировании", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать свободный шаблон при агрегирование")')),
+            ("Использовать свободный принтер при агрегировании", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать свободный принтер при агрегирование")')),
+            ("Переключатель «Режим отладки»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Режим отладки")')),
+            ("Переключатель «Увеличить шрифт»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Увеличить шрифт")')),
+            ("Переключатель «Обмен с 1С»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Обмен с 1С")')),
+            ("Кнопка «Инструкция по настройке ТСД»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Инструкция по настройке ТСД")')),
+            ("Кнопка «Тема приложения»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Тема приложения")')),
+        ]
+
+        if device_id is not None:
+            id_text = f"ID устройства - {device_id}"
+            elements.insert(3, ("ID устройства", (By.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{id_text}")')))
+
+        for name, locator in elements:
+            if not self.is_displayed(locator, timeout=1):
+                self.scroll_to_element(locator, max_swipes=2)
+                if not self.is_displayed(locator, timeout=1):
+                    raise AssertionError(f"Элемент '{name}' не найден на странице настроек после прокрутки")
+
+        self.swipe_up(0.1)
+        self.scroll_to_element_up(self.CHECK_CONNECTION_BUTTON)
+
     @allure.step("Открыть меню разделов")
     def tap_content_button(self):
         self.tap(self.CONTENT_BUTTON)
@@ -166,6 +213,7 @@ class SettingsPage(BasePage):
 
     @allure.step("Нажать 'ПРОВЕРКА СВЯЗИ'")
     def tap_check_connection_button(self):
+        self.scroll_to_element_up(self.CHECK_CONNECTION_BUTTON)
         self.tap(self.CHECK_CONNECTION_BUTTON)
 
     @allure.step("Проверить, что появилось сообщение об успешном подключении")
@@ -179,8 +227,9 @@ class SettingsPage(BasePage):
         self.tap(self.SUCCESSFUL_CHECK_CONNECTION)
 
     @allure.step("Проверить, что появилось сообщение об ошибке подключения")
-    def unsuccess_check_connection_is_displayed(self):
-        assert self.is_displayed(self.UNSUCCESSFUL_CHECK_CONNECTION), "Сообщение об ошибке подключения не найдено"
+    def unsuccess_check_connection_is_displayed(self, timeout=20):
+        assert self.is_displayed(self.UNSUCCESSFUL_CHECK_CONNECTION, timeout=timeout), \
+            "Сообщение об ошибке подключения не найдено"
         allure.attach(
             self.driver.get_screenshot_as_png(),
             name="unsuccess_connection_message",
@@ -201,12 +250,11 @@ class SettingsPage(BasePage):
             self.scroll_to_element(header)
             self.tap(header)
 
-            if not self.is_displayed(details, timeout=2):
+            if not self.is_displayed(details, timeout=1):
                 self.scroll_to_element(details)
 
-            assert self.is_displayed(details, timeout=2), \
+            assert self.is_displayed(details, timeout=1), \
                 f"Детали для версии '{version_key}' не отображаются после раскрытия и свайпа!"
-
 
     @allure.step("Получить отображаемую версию приложения")
     def get_displayed_version(self) -> str:
@@ -233,6 +281,16 @@ class SettingsPage(BasePage):
     @allure.step("Нажать на поле 'Адрес сервера'")
     def tap_address_server_field(self):
         self.tap(self.ADDRESS_SERVER_FIELD)
+
+    @allure.step("Нажать на поле 'Адрес сервера' и проверить элементы редактирования")
+    def open_address_edit_and_check_elements(self):
+        self.tap(self.ADDRESS_SERVER_FIELD)
+        assert self.is_displayed(self.ADDRESS_SERVER_INPUT), \
+            "Поле 'Адрес сервера' не отображается после тапа"
+        assert self.is_displayed(self.SAVE_BUTTON), \
+            "Кнопка 'СОХРАНИТЬ' не отображается после тапа"
+        assert self.is_displayed(self.CLOSE_BUTTON), \
+            "Кнопка 'ОТМЕНИТЬ' не отображается после тапа"
 
     @allure.step("Ввести адрес сервера: {address}")
     def input_address(self, address):
@@ -262,5 +320,18 @@ class SettingsPage(BasePage):
     def enter_port_and_save(self, port):
         self.tap_port_server_field()
         self.input_port(port)
+        self.tap_save_button()
+
+    @allure.step("Получить текущий отображаемый порт сервера")
+    def get_current_port_server(self):
+        return self.get_text(self.PORT_SERVER_FIELD)
+
+    @allure.step("Убедиться, что порт сервера равен {expected_port}")
+    def ensure_port_is(self, expected_port: str):
+        current_port = self.get_current_port_server().strip()
+        if current_port == expected_port:
+            return
+        self.tap_port_server_field()
+        self.input_port(expected_port)
         self.tap_save_button()
 

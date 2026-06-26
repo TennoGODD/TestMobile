@@ -1,4 +1,4 @@
-name: Run Mobile Tests with Allure Report
+name: Run Mobile Tests with TestIT & Allure Report
 
 on:
   push:
@@ -21,19 +21,31 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.14'
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Run pytest with Allure results
+      - name: Create connection_config.ini for TestIT
+        shell: bash
+        run: |
+          cat > connection_config.ini <<EOF
+          [testit]
+          url = ${{ secrets.TMS_URL }}
+          projectId = ${{ secrets.TMS_PROJECT_ID }}
+          adapterMode = 2
+          configurationId = ${{ secrets.TMS_CONFIGURATION_ID }}
+          EOF
+
+      - name: Run pytest with TestIT and Allure
         env:
+          TMS_PRIVATE_TOKEN: ${{ secrets.TMS_PRIVATE_TOKEN }}
           APPHOST: ${{ secrets.APPHOST }}
           APPPORT: ${{ secrets.APPPORT }}
           UDID: ${{ secrets.UDID }}
         run: |
-          pytest --alluredir=allure-results
+          pytest --testit --alluredir=allure-results
         continue-on-error: true
 
       - name: Copy history from gh-pages (if exists)

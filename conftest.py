@@ -53,7 +53,6 @@ def settings_page(driver):
     content = ContentPage(driver)
 
     settings_btn = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Настройки")')
-
     settings_title = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Настройки подключения")')
 
     settings.tap_warning_if_present()
@@ -104,13 +103,13 @@ def code_information_page(driver):
     content.tap_code_information_button()
 
     try:
-        wait.until(EC.visibility_of_element_located(code_information_button))
+        wait.until(EC.visibility_of_element_located(code_information_text))
     except Exception:
         code_information.tap_warning_if_present()
         code_information.tap_content_button()
         wait.until(EC.element_to_be_clickable(code_information_button))
-        content.tap_code_information_button()
-        wait.until(EC.visibility_of_element_located(code_information_button))
+        content.tap_settings_button()
+        wait.until(EC.visibility_of_element_located(code_information_text))
 
     code_information.tap_warning_if_present()
 
