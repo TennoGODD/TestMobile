@@ -1,5 +1,4 @@
 #base_page.py
-import time
 
 from selenium.common import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -67,8 +66,6 @@ class BasePage:
         start_x = width // 2
         start_y = int(height * 0.7)
         end_y = int(height * 0.3)
-        # start_y = int(height * 0.8)
-        # end_y = int(height * 0.2)
 
         for _ in range(max_swipes):
             try:

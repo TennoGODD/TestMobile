@@ -6,6 +6,7 @@ __pycache__/
 .idea
 .idea/
 .venv
+.venv312
 *.iml
 report
 allure-results

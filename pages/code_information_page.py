@@ -1,6 +1,6 @@
 #code_information_page.py
 
-import allure
+from utils.step_utils import shared_step
 import shlex
 from base.base_page import BasePage
 from appium.webdriver.common.appiumby import AppiumBy as By
@@ -17,24 +17,24 @@ class CodeInformationPage(BasePage):
     PRODUCT_GTIN = (By.ID, "com.dmc_mobile:id/product_gtin")
     PRODUCT_LIFETIME = (By.ID, "com.dmc_mobile:id/product_lifetime")
 
-    @allure.step("Закрыть предупреждение")
+    @shared_step("Закрыть предупреждение")
     def tap_warning_if_present(self, timeout=2):
         if self.is_displayed(self.WARNING_FIELD_1, timeout=timeout):
             self.tap(self.WARNING_FIELD_1)
         if self.is_displayed(self.WARNING_FIELD_2, timeout=timeout):
             self.tap(self.WARNING_FIELD_2)
 
-    @allure.step("Открыть меню разделов")
+    @shared_step("Открыть меню разделов")
     def tap_content_button(self):
         self.tap(self.CONTENT_BUTTON)
 
-    @allure.step("Сканирование кода {barcode}")
+    @shared_step("Сканирование кода {barcode}")
     def emulate_scan(self, barcode: str):
         safe_barcode = shlex.quote(barcode)
         cmd = f"am broadcast -a com.android.scanner.broadcast --es scandata {safe_barcode}"
         self.driver.execute_script("mobile: shell", {"command": cmd})
 
-    @allure.step("Проверить поле '{label}' на соответствие ожидаемому значению")
+    @shared_step("Проверить поле '{label}' на соответствие ожидаемому значению")
     def _check_field(self, locator, expected_text, label):
         if not self.is_displayed(locator):
             raise AssertionError(f"Поле '{label}' не отображается на экране")
@@ -45,7 +45,7 @@ class CodeInformationPage(BasePage):
                 f"Поле '{label}': ожидалось '{expected_text}', получено '{actual_text}'"
             )
 
-    @allure.step("Проверить информацию после сканирования кода")
+    @shared_step("Проверить информацию после сканирования кода")
     def verify_scanned_data(
             self,
             code=None,  # значение кода

@@ -1,17 +1,15 @@
 # test_code_information.py
 
+from utils.step_utils import shared_title
 import allure
 import testit
-import time
 
 
 
 @allure.feature("Информация по коду")
 class TestCodeInformation:
-    @allure.title("DMC Mobile. Получение информации по коду. Сканирование не агрегированного КМ")
-    @testit.workItemIds("487")
-    @testit.externalId("")
-    @allure.title("DMC Mobile. Получение информации по коду. Сканирование не агрегированного КМ")
+    @shared_title("DMC Mobile. Получение информации по коду. Сканирование не агрегированного КМ")
+    @testit.externalId("487")
     def test_scan_non_aggregated_km(self, code_information_page):
         code_information_page.emulate_scan("0107665585002196215Ut,r7FhgAHj.93dGVz")
         code_information_page.swipe_up(0.1)
@@ -28,10 +26,8 @@ class TestCodeInformation:
             task_status="Требуется отправить отчёт о нанесении КМ",
         )
 
-    @allure.title("DMC Mobile. Получение информации по коду. Сканирование агрегированного КМ")
-    @testit.workItemIds("488")
-    @testit.externalId("")
-    @allure.title("DMC Mobile. Получение информации по коду. Сканирование не агрегированного КМ")
+    @shared_title("DMC Mobile. Получение информации по коду. Сканирование агрегированного КМ")
+    @testit.externalId("488")
     def test_scan_aggregated_km(self, code_information_page):
         code_information_page.emulate_scan("0107665585002196215)KnUifb!k!.R93dGVz")
         code_information_page.swipe_up(0.1)

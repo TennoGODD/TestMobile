@@ -1,6 +1,7 @@
 # settings_page.py
-
 import allure
+from utils.step_utils import shared_step
+
 from base.base_page import BasePage
 from appium.webdriver.common.appiumby import AppiumBy as By
 
@@ -154,7 +155,7 @@ class SettingsPage(BasePage):
     SAVE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("СОХРАНИТЬ")')
     CLOSE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ОТМЕНИТЬ")')
 
-    @allure.step("Проверить наличие всех элементов на странице настроек")
+    @shared_step("Проверить наличие всех элементов на странице настроек")
     def verify_all_settings_elements_present(self, device_id=None):
         elements = [
             ("Кнопка «Проверка связи»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ПРОВЕРКА СВЯЗИ")')),
@@ -200,23 +201,23 @@ class SettingsPage(BasePage):
         self.swipe_up(0.1)
         self.scroll_to_element_up(self.CHECK_CONNECTION_BUTTON)
 
-    @allure.step("Открыть меню разделов")
+    @shared_step("Открыть меню разделов")
     def tap_content_button(self):
         self.tap(self.CONTENT_BUTTON)
 
-    @allure.step("Закрыть предупреждение")
+    @shared_step("Закрыть предупреждение")
     def tap_warning_if_present(self, timeout=2):
         if self.is_displayed(self.WARNING_FIELD_1, timeout=timeout):
             self.tap(self.WARNING_FIELD_1)
         if self.is_displayed(self.WARNING_FIELD_2, timeout=timeout):
             self.tap(self.WARNING_FIELD_2)
 
-    @allure.step("Нажать 'ПРОВЕРКА СВЯЗИ'")
+    @shared_step("Нажать 'ПРОВЕРКА СВЯЗИ'")
     def tap_check_connection_button(self):
         self.scroll_to_element_up(self.CHECK_CONNECTION_BUTTON)
         self.tap(self.CHECK_CONNECTION_BUTTON)
 
-    @allure.step("Проверить, что появилось сообщение об успешном подключении")
+    @shared_step("Проверить, что появилось сообщение об успешном подключении")
     def success_check_connection_is_displayed(self):
         assert self.is_displayed(self.SUCCESSFUL_CHECK_CONNECTION), "Сообщение об успешном подключении не найдено"
         allure.attach(
@@ -226,7 +227,7 @@ class SettingsPage(BasePage):
         )
         self.tap(self.SUCCESSFUL_CHECK_CONNECTION)
 
-    @allure.step("Проверить, что появилось сообщение об ошибке подключения")
+    @shared_step("Проверить, что появилось сообщение об ошибке подключения")
     def unsuccess_check_connection_is_displayed(self, timeout=20):
         assert self.is_displayed(self.UNSUCCESSFUL_CHECK_CONNECTION, timeout=timeout), \
             "Сообщение об ошибке подключения не найдено"
@@ -237,11 +238,11 @@ class SettingsPage(BasePage):
         )
         self.tap(self.UNSUCCESSFUL_CHECK_CONNECTION)
 
-    @allure.step("Нажать 'СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ'")
+    @shared_step("Нажать 'СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ'")
     def tap_list_fixes_version_button(self):
         self.tap(self.LIST_FIXES_VERSION_BUTTON)
 
-    @allure.step("Проверить список исправлений по версиям")
+    @shared_step("Проверить список исправлений по версиям")
     def verify_all_versions(self):
         for version_key, locators in self.VERSION_ITEMS.items():
             header = locators["header"]
@@ -256,7 +257,7 @@ class SettingsPage(BasePage):
             assert self.is_displayed(details, timeout=1), \
                 f"Детали для версии '{version_key}' не отображаются после раскрытия и свайпа!"
 
-    @allure.step("Получить отображаемую версию приложения")
+    @shared_step("Получить отображаемую версию приложения")
     def get_displayed_version(self) -> str:
         version_element = self.find_element(self.VERSION_TEXT)
         full_text = version_element.text
@@ -266,23 +267,23 @@ class SettingsPage(BasePage):
             return match.group()
         raise ValueError(f"Не удалось извлечь версию из текста: {full_text}")
 
-    @allure.step("Сохранить настройки (нажать СОХРАНИТЬ)")
+    @shared_step("Сохранить настройки (нажать СОХРАНИТЬ)")
     def tap_save_button(self):
         self.tap(self.SAVE_BUTTON)
 
-    @allure.step("Сохранить настройки (нажать ОТМЕНИТЬ)")
+    @shared_step("Сохранить настройки (нажать ОТМЕНИТЬ)")
     def tap_close_button(self):
         self.tap(self.CLOSE_BUTTON)
 
-    @allure.step("Получить текущий отображаемый адрес сервера")
+    @shared_step("Получить текущий отображаемый адрес сервера")
     def get_current_address_server(self):
         return self.get_text(self.ADDRESS_SERVER_FIELD)
 
-    @allure.step("Нажать на поле 'Адрес сервера'")
+    @shared_step("Нажать на поле 'Адрес сервера'")
     def tap_address_server_field(self):
         self.tap(self.ADDRESS_SERVER_FIELD)
 
-    @allure.step("Нажать на поле 'Адрес сервера' и проверить элементы редактирования")
+    @shared_step("Нажать на поле 'Адрес сервера' и проверить элементы редактирования")
     def open_address_edit_and_check_elements(self):
         self.tap(self.ADDRESS_SERVER_FIELD)
         assert self.is_displayed(self.ADDRESS_SERVER_INPUT), \
@@ -292,41 +293,41 @@ class SettingsPage(BasePage):
         assert self.is_displayed(self.CLOSE_BUTTON), \
             "Кнопка 'ОТМЕНИТЬ' не отображается после тапа"
 
-    @allure.step("Ввести адрес сервера: {address}")
+    @shared_step("Ввести адрес сервера: {address}")
     def input_address(self, address):
         self.input_text(self.ADDRESS_SERVER_INPUT, address)
 
-    @allure.step("Ввести адрес '{address}' и сохранить")
+    @shared_step("Ввести адрес '{address}' и сохранить")
     def enter_address_and_save(self, address):
         self.tap_address_server_field()
         self.input_address(address)
         self.tap_save_button()
 
-    @allure.step("Проверить, что адрес сервера равен {expected_address}")
+    @shared_step("Проверить, что адрес сервера равен {expected_address}")
     def assert_address_server_equals(self, expected_address):
         actual = self.get_current_address_server()
         assert actual == expected_address, f"Ожидался адрес {expected_address}, получен {actual}"
         allure.attach(self.driver.get_screenshot_as_png(), name=f"address_{expected_address}", attachment_type=allure.attachment_type.PNG)
 
-    @allure.step("Нажать на поле 'Порт сервера'")
+    @shared_step("Нажать на поле 'Порт сервера'")
     def tap_port_server_field(self):
         self.tap(self.PORT_SERVER_FIELD)
 
-    @allure.step("Ввести порт: {port}")
+    @shared_step("Ввести порт: {port}")
     def input_port(self, port):
         self.input_text(self.PORT_SERVER_INPUT, port)
 
-    @allure.step("Ввести порт '{port}' и сохранить")
+    @shared_step("Ввести порт '{port}' и сохранить")
     def enter_port_and_save(self, port):
         self.tap_port_server_field()
         self.input_port(port)
         self.tap_save_button()
 
-    @allure.step("Получить текущий отображаемый порт сервера")
+    @shared_step("Получить текущий отображаемый порт сервера")
     def get_current_port_server(self):
         return self.get_text(self.PORT_SERVER_FIELD)
 
-    @allure.step("Убедиться, что порт сервера равен {expected_port}")
+    @shared_step("Убедиться, что порт сервера равен {expected_port}")
     def ensure_port_is(self, expected_port: str):
         current_port = self.get_current_port_server().strip()
         if current_port == expected_port:

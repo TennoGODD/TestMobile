@@ -1,6 +1,7 @@
 #conftest.py
 
 import allure
+import testit
 import pytest
 from appium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,6 +42,7 @@ def pytest_runtest_makereport(item, call):
                 name="screenshot_on_fail",
                 attachment_type=allure.attachment_type.PNG
             )
+            testit.addAttachments("screenshot_on_fail.png", driver.get_screenshot_as_png())
 
         excinfo = call.excinfo
         if excinfo:
