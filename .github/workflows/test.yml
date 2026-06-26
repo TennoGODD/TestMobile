@@ -32,13 +32,13 @@ jobs:
       - name: Create connection_config.ini for TestIT
         shell: powershell
         run: |
-          @"
+          Set-Content -Path connection_config.ini -Encoding utf8NoBOM -Value @"
           [testit]
           url = ${{ secrets.TMS_URL }}
           projectId = ${{ secrets.TMS_PROJECT_ID }}
           adapterMode = 2
           configurationId = ${{ secrets.TMS_CONFIGURATION_ID }}
-          "@ | Out-File -FilePath connection_config.ini -Encoding utf8
+          "@
 
       - name: Run pytest with TestIT and Allure
         env:
