@@ -1,0 +1,27 @@
+.pytest_cache
+.pytest_cache/
+__pycache__
+__pycache__/
+*.pyc
+.idea
+.idea/
+.venv
+.venv312
+*.iml
+report
+allure-results
+allure-results/
+allure-report/
+downloads
+webdriver/
+drivers/
+*.exe
+.vscode/
+.env
+build/
+connection_config.ini
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+*.log

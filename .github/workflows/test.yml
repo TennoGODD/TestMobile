@@ -1,0 +1,86 @@
+name: Run Mobile Tests with TestIT & Allure Report
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Checkout gh-pages branch (for history)
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: ./.github/gh-pages
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: |
+          python -m ensurepip --upgrade
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Create connection_config.ini for TestIT
+        shell: powershell
+        run: |
+          $content = @"
+          [testit]
+          url = ${{ secrets.TMS_URL }}
+          projectId = ${{ secrets.TMS_PROJECT_ID }}
+          adapterMode = 2
+          configurationId = ${{ secrets.TMS_CONFIGURATION_ID }}
+          "@
+          [System.IO.File]::WriteAllText("connection_config.ini", $content, [System.Text.UTF8Encoding]::new($false))
+
+      - name: Run pytest with TestIT and Allure
+        env:
+          TMS_PRIVATE_TOKEN: ${{ secrets.TMS_PRIVATE_TOKEN }}
+          APPHOST: ${{ secrets.APPHOST }}
+          APPPORT: ${{ secrets.APPPORT }}
+          UDID: ${{ secrets.UDID }}
+        run: |
+          python -m pytest tests/ --testit --alluredir=allure-results
+        continue-on-error: true
+
+      - name: Copy history from gh-pages (if exists)
+        shell: powershell
+        run: |
+          if (Test-Path ".\.github\gh-pages\history") {
+            Copy-Item -Recurse -Force ".\.github\gh-pages\history" "allure-results\"
+          } else {
+            Write-Host "No existing history found, starting fresh"
+          }
+
+      - name: Create executor.json for Allure
+        shell: powershell
+        run: |
+          $json = @{
+            name       = "GitHub Actions"
+            type       = "github"
+            buildName  = "CI #${{ github.run_number }}"
+            buildUrl   = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            reportName = "Allure Report"
+          } | ConvertTo-Json
+          [System.IO.File]::WriteAllText("allure-results\executor.json", $json, [System.Text.UTF8Encoding]::new($false))
+
+      - name: Generate Allure report
+        shell: powershell
+        run: |
+          allure generate allure-results --clean -o allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.CI_TOKEN }}
+          publish_dir: ./allure-report
+          publish_branch: gh-pages
+          force_orphan: true
