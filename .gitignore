@@ -18,3 +18,10 @@ drivers/
 *.exe
 .vscode/
 .env
+build/
+connection_config.ini
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+*.log

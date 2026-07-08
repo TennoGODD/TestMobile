@@ -60,6 +60,18 @@ jobs:
             Write-Host "No existing history found, starting fresh"
           }
 
+      - name: Create executor.json for Allure
+        shell: powershell
+        run: |
+          $json = @{
+            name       = "GitHub Actions"
+            type       = "github"
+            buildName  = "CI #${{ github.run_number }}"
+            buildUrl   = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            reportName = "Allure Report"
+          } | ConvertTo-Json
+          [System.IO.File]::WriteAllText("allure-results\executor.json", $json, [System.Text.UTF8Encoding]::new($false))
+
       - name: Generate Allure report
         shell: powershell
         run: |

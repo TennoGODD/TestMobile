@@ -4,145 +4,19 @@ from utils.step_utils import shared_step
 
 from base.base_page import BasePage
 from appium.webdriver.common.appiumby import AppiumBy as By
+from utils.locators import by_text, by_desc
 
 
 class SettingsPage(BasePage):
-    CONTENT_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.ViewGroup").instance(2)')
+    MENU_BUTTON = by_desc("Настройки")
+    PAGE_TITLE = by_text("Настройки подключения")
+    SECTION_NAME = "Настройки"
 
-    WARNING_FIELD_1 = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Введите адрес сервера, для продложения работы")')
-    WARNING_FIELD_2 = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Внимание! Не удалось подключиться к серверу!")')
+    CHECK_CONNECTION_BUTTON = by_text("ПРОВЕРКА СВЯЗИ")
+    SUCCESSFUL_CHECK_CONNECTION = by_text("Успешное подключение к серверу!")
+    UNSUCCESSFUL_CHECK_CONNECTION = by_text("Ошибка! Подключение к серверу отсутвует!")
 
-    CHECK_CONNECTION_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ПРОВЕРКА СВЯЗИ")')
-    SUCCESSFUL_CHECK_CONNECTION = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Успешное подключение к серверу!")')
-    UNSUCCESSFUL_CHECK_CONNECTION = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Ошибка! Подключение к серверу отсутвует!")')
-
-    LIST_FIXES_VERSION_BUTTON = (By.ACCESSIBILITY_ID, "СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ")
-    VERSION_ITEMS = {
-        "1, 20.05.25": {
-            "header": (By.ACCESSIBILITY_ID, "1, 20.05.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена работа с наборами")'),
-        },
-        "2, 29.05.25": {
-            "header": (By.ACCESSIBILITY_ID, "2, 29.05.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлены переменные weight_04 и weight_05")'),
-        },
-        "3, 18.06.25": {
-            "header": (By.ACCESSIBILITY_ID, "3, 18.06.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Добавлено:")'),
-        },
-        "4, 25.06.25": {
-            "header": (By.ACCESSIBILITY_ID, "4, 25.06.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- В быстрое изменение агрегата добавлена возможность игнорировать задание")'),
-        },
-        "5, 03.07.25": {
-            "header": (By.ACCESSIBILITY_ID, "5, 03.07.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлена ошибка при работе с типографскими кодами. Когда в БД записывался неправильно криптохвост")'),
-        },
-        "6, 07.07.25": {
-            "header": (By.ACCESSIBILITY_ID, "6, 07.07.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлена ошибка при работе с 4х значными типографскими кодами. Когда в БД записывался неправильно криптохвост")'),
-        },
-        "7, 21.07.25": {
-            "header": (By.ACCESSIBILITY_ID, "7, 21.07.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлена ошибка при работе с переменной slifetime")'),
-        },
-        "10, 23.07.25": {
-            "header": (By.ACCESSIBILITY_ID, "10, 23.07.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена работа с белорусскими кодами агрегата")'),
-        },
-        "11, 23.07.25": {
-            "header": (By.ACCESSIBILITY_ID, "11, 23.07.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена возможность агрегировать 0 и 1 уровень одновременно вовремя сериализации. Теперь в тот момент, когда вы берёте задание в работу по сериализации и есть несколько уровней агрегации приложение задаст вопрос и выведет кнопки в виде списка названий нулевого и первого уровня агргегации, а так же кнопка «Нет» - что бы выполнить сериализацию без агрегирования")'),
-        },
-        "12, 21.08.25": {
-            "header": (By.ACCESSIBILITY_ID, "12, 21.08.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Интеграция с ТСД АТОЛ Smart M20")'),
-        },
-        "13, 25.08.25": {
-            "header": (By.ACCESSIBILITY_ID, "13, 25.08.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена обработка переменной cell")'),
-        },
-        "14, 05.09.25": {
-            "header": (By.ACCESSIBILITY_ID, "14, 05.09.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена возможность печатать через old printer (Работает только с шаблонами из DMC (Не редактор этикеток))")'),
-        },
-        "15, 19.09.25": {
-            "header": (By.ACCESSIBILITY_ID, "15, 19.09.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text(" - Убран приоритет при выборе шаблона, который находился где штучный шаблон")'),
-        },
-        "16, 30.09.25": {
-            "header": (By.ACCESSIBILITY_ID, "16, 30.09.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Срок годности теперь сперва берётся из задания, из переменной expiration_date")'),
-        },
-        "17, 02.10.25": {
-            "header": (By.ACCESSIBILITY_ID, "17, 02.10.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- В коде информации по коду в результате агрегации добавлено наименование продукции")'),
-        },
-        "18, 02.10.25": {
-            "header": (By.ACCESSIBILITY_ID, "18, 02.10.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Логи переехали в Download/dmc/logs/")'),
-        },
-        "19, 10.10.25": {
-            "header": (By.ACCESSIBILITY_ID, "19, 10.10.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- В документ логирования теперь записываются последние 10 запросов")'),
-        },
-        "20, 29.10.25": {
-            "header": (By.ACCESSIBILITY_ID, "20, 29.10.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Приложение обновилось на новую платформу, что уменьшает размер apk-файла")'),
-        },
-        "20.5, 10.11.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.5, 10.11.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена переменная pack_ean13barcode")'),
-        },
-        "20.7, 19.11.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.7, 19.11.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена проверка-поиск штучного кода в агрегатах")'),
-        },
-        "20.76, 09.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.76, 09.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлено обработка условий в переменных").instance(0)'),
-        },
-        "20.8, 16.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.8, 16.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Добавлена настройка выбора языка принтера, для oldprinter ")'),
-        },
-        "20.10, 19.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.10, 19.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- При отбраковке весового агрегата теперь вычисляется вес, в задание и родителе ")'),
-        },
-        "20.11, 25.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.11, 25.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено, когда в версиях с 20.7.7 при повторе печати принтер брался из линии, а не ранее выбранный незанятый принтер")'),
-        },
-        "20.12, 30.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "20.12, 30.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлена ошибка, когда в быстрой агреганции могли не добавляться и изыматься коды")'),
-        },
-        "21, 20.01.26": {
-            "header": (By.ACCESSIBILITY_ID, "21, 20.01.26"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.TextView").instance(6)'),
-        },
-        "22, 30.12.25": {
-            "header": (By.ACCESSIBILITY_ID, "22, 30.12.25"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- В печати вложений теперь можно выбрать язык принера")'),
-        },
-        "23, 30.03.26": {
-            "header": (By.ACCESSIBILITY_ID, "23, 30.03.26"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- При первом запуске приложения, ip-адрес сервера установлен - 0.0.0.0 и приложение перенаправляет в настройки")'),
-        },
-        "23r2, 07.04.26": {
-            "header": (By.ACCESSIBILITY_ID, "23r2, 07.04.26"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено, когда новые версии ТСД не отображались в ЛК DMC")'),
-        },
-        "24, 30.04.26": {
-            "header": (By.ACCESSIBILITY_ID, "24, 30.04.26"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено когда product0 не брался, если в конце строки не было переноса")'),
-        },
-        "25, 09.06.26": {
-            "header": (By.ACCESSIBILITY_ID, "25, 09.06.26"),
-            "details": (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("- Исправлено, если описание в карточке продукции было написано в одну строку, а в шаблоне присутствовала переменная с индексом более 0, печать не происходила")'),
-        },
-    }
+    LIST_FIXES_VERSION_BUTTON = by_desc("СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ")
 
     VERSION_TEXT = (By.XPATH, '//android.widget.TextView[@text="Версия приложения:"]/following-sibling::android.widget.TextView')
 
@@ -152,45 +26,44 @@ class SettingsPage(BasePage):
     PORT_SERVER_FIELD = (By.XPATH, '//android.widget.TextView[@text="Порт сервера:"]/following-sibling::android.widget.TextView')
     PORT_SERVER_INPUT = (By.CLASS_NAME, 'android.widget.EditText')
 
-    SAVE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("СОХРАНИТЬ")')
-    CLOSE_BUTTON = (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ОТМЕНИТЬ")')
+    SAVE_BUTTON = by_text("СОХРАНИТЬ")
+    CLOSE_BUTTON = by_text("ОТМЕНИТЬ")
 
     @shared_step("Проверить наличие всех элементов на странице настроек")
     def verify_all_settings_elements_present(self, device_id=None):
         elements = [
-            ("Кнопка «Проверка связи»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ПРОВЕРКА СВЯЗИ")')),
-            ("Кнопка «Список исправлений по версиям»", (By.ACCESSIBILITY_ID, "СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ")),
-            ("Кнопка «Изменить стартовую страницу»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("ИЗМЕНИТЬ СТАРТОВУЮ СТРАНИЦУ")')),
-            ("Адрес сервера", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Адрес сервера:")')),
-            ("Порт сервера", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Порт сервера:")')),
-            ("Порт сервиса печати", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Порт сервиса печати:")')),
-            ("Переключатель «Проверять структуру кода»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Проверять структуру кода")')),
-            ("Переключатель «Использовать камеру для сканирования»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать камеру для сканирования")')),
-            ("Переключатель «Автоматическое считывание через камеру»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Автоматическое считывание через камеру")')),
-            ("Переключатель «Автоматически завершать задание»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Автоматически завершать задание")')),
-            ("Переключатель «Разрешить сериализацию, если статус задания готов к печати или идёт печать»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить сериализацию, если статус задания готов к печати или идёт печать")')),
-            ("Переключатель «Контролировать печать агрегата»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контролировать печать агрегата")')),
-            ("Переключатель «Режим работы с отсканированными кодами»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Режим работы c отсканированными кодами")')),
-            ("Переключатель «Контроль изменений при быстрой агрегации»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контроль изменений при быстром изменении агрегата")')),
-            ("Переключатель «Разрешить изменять агрегат введенных в оборот и нанесенных (не для быстрого)»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить изменять агрегат введённых в оборот и нанесённых (не для быстрого)")')),
-            ("Разрешить типографские коды агрегата", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Разрешить типографские коды агрегата")')),
-            ("Отображать поле ввода веса поддона", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Отображать поле ввода веса поддона")')),
-            ("Переключатель «Контролировать печать наборов»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Контролировать печать наборов")')),
-            ("ezpl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().description("ezpl")')),
-            ("tspl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().description("tspl")')),
-            ("zpl", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("zpl")')),
-            ("Использовать свободный шаблон при агрегировании", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать свободный шаблон при агрегирование")')),
-            ("Использовать свободный принтер при агрегировании", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Использовать свободный принтер при агрегирование")')),
-            ("Переключатель «Режим отладки»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Режим отладки")')),
-            ("Переключатель «Увеличить шрифт»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Увеличить шрифт")')),
-            ("Переключатель «Обмен с 1С»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Обмен с 1С")')),
-            ("Кнопка «Инструкция по настройке ТСД»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Инструкция по настройке ТСД")')),
-            ("Кнопка «Тема приложения»", (By.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Тема приложения")')),
+            ("Кнопка «Проверка связи»", by_text("ПРОВЕРКА СВЯЗИ")),
+            ("Кнопка «Список исправлений по версиям»", by_desc("СПИСОК ИСПРАВЛЕНИЙ ПО ВЕРСИЯМ")),
+            ("Кнопка «Изменить стартовую страницу»", by_text("ИЗМЕНИТЬ СТАРТОВУЮ СТРАНИЦУ")),
+            ("Адрес сервера", by_text("Адрес сервера:")),
+            ("Порт сервера", by_text("Порт сервера:")),
+            ("Порт сервиса печати", by_text("Порт сервиса печати:")),
+            ("Переключатель «Использовать камеру для сканирования»", by_text("Использовать камеру для сканирования")),
+            ("Переключатель «Автоматическое считывание через камеру»", by_text("Автоматическое считывание через камеру")),
+            ("Переключатель «Автоматически завершать задание»", by_text("Автоматически завершать задание")),
+            ("Переключатель «Разрешить сериализацию, если статус задания готов к печати или идёт печать»", by_text("Разрешить сериализацию, если статус задания готов к печати или идёт печать")),
+            ("Переключатель «Контролировать печать агрегата»", by_text("Контролировать печать агрегата")),
+            ("Переключатель «Режим работы с отсканированными кодами»", by_text("Режим работы c отсканированными кодами")),
+            ("Переключатель «Контроль изменений при быстрой агрегации»", by_text("Контроль изменений при быстром изменении агрегата")),
+            ("Переключатель «Разрешить изменять агрегат введенных в оборот и нанесенных (не для быстрого)»", by_text("Разрешить изменять агрегат введённых в оборот и нанесённых (не для быстрого)")),
+            ("Разрешить типографские коды агрегата", by_text("Разрешить типографские коды агрегата")),
+            ("Отображать поле ввода веса поддона", by_text("Отображать поле ввода веса поддона")),
+            ("Переключатель «Контролировать печать наборов»", by_text("Контролировать печать наборов")),
+            ("ezpl", by_desc("ezpl")),
+            ("tspl", by_desc("tspl")),
+            ("zpl", by_text("zpl")),
+            ("Использовать свободный шаблон при агрегировании", by_text("Использовать свободный шаблон при агрегирование")),
+            ("Использовать свободный принтер при агрегировании", by_text("Использовать свободный принтер при агрегирование")),
+            ("Переключатель «Режим отладки»", by_text("Режим отладки")),
+            ("Переключатель «Увеличить шрифт»", by_text("Увеличить шрифт")),
+            ("Переключатель «Обмен с 1С»", by_text("Обмен с 1С")),
+            ("Кнопка «Инструкция по настройке ТСД»", by_text("Инструкция по настройке ТСД")),
+            ("Кнопка «Тема приложения»", by_text("Тема приложения")),
         ]
 
         if device_id is not None:
             id_text = f"ID устройства - {device_id}"
-            elements.insert(3, ("ID устройства", (By.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{id_text}")')))
+            elements.insert(3, ("ID устройства", by_text(id_text)))
 
         for name, locator in elements:
             if not self.is_displayed(locator, timeout=1):
@@ -200,17 +73,6 @@ class SettingsPage(BasePage):
 
         self.swipe_up(0.1)
         self.scroll_to_element_up(self.CHECK_CONNECTION_BUTTON)
-
-    @shared_step("Открыть меню разделов")
-    def tap_content_button(self):
-        self.tap(self.CONTENT_BUTTON)
-
-    @shared_step("Закрыть предупреждение")
-    def tap_warning_if_present(self, timeout=2):
-        if self.is_displayed(self.WARNING_FIELD_1, timeout=timeout):
-            self.tap(self.WARNING_FIELD_1)
-        if self.is_displayed(self.WARNING_FIELD_2, timeout=timeout):
-            self.tap(self.WARNING_FIELD_2)
 
     @shared_step("Нажать 'ПРОВЕРКА СВЯЗИ'")
     def tap_check_connection_button(self):
@@ -243,19 +105,20 @@ class SettingsPage(BasePage):
         self.tap(self.LIST_FIXES_VERSION_BUTTON)
 
     @shared_step("Проверить список исправлений по версиям")
-    def verify_all_versions(self):
-        for version_key, locators in self.VERSION_ITEMS.items():
-            header = locators["header"]
-            details = locators["details"]
+    def verify_all_versions(self, versions: dict):
+        for version, details in versions.items():
+            header = by_desc(version)
+            # значение — текст деталей; для особых случаев можно передать готовый локатор
+            details_locator = details if isinstance(details, tuple) else by_text(details)
 
             self.scroll_to_element(header)
             self.tap(header)
 
-            if not self.is_displayed(details, timeout=1):
-                self.scroll_to_element(details)
+            if not self.is_displayed(details_locator, timeout=1):
+                self.scroll_to_element(details_locator)
 
-            assert self.is_displayed(details, timeout=1), \
-                f"Детали для версии '{version_key}' не отображаются после раскрытия и свайпа!"
+            assert self.is_displayed(details_locator, timeout=1), \
+                f"Детали для версии '{version}' не отображаются после раскрытия и свайпа!"
 
     @shared_step("Получить отображаемую версию приложения")
     def get_displayed_version(self) -> str:
@@ -327,12 +190,12 @@ class SettingsPage(BasePage):
     def get_current_port_server(self):
         return self.get_text(self.PORT_SERVER_FIELD)
 
-    @shared_step("Убедиться, что порт сервера равен {expected_port}")
     def ensure_port_is(self, expected_port: str):
-        current_port = self.get_current_port_server().strip()
-        if current_port == expected_port:
-            return
-        self.tap_port_server_field()
-        self.input_port(expected_port)
-        self.tap_save_button()
+        with shared_step(f"Проверить порт сервера: {expected_port}"):
+            current_port = self.get_current_port_server().strip()
+            if current_port == expected_port:
+                return
+            self.tap_port_server_field()
+            self.input_port(expected_port)
+            self.tap_save_button()
 
