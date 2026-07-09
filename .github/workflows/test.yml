@@ -9,27 +9,38 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # На self-hosted Windows артефакты от прошлого прогона мешают checkout'у.
-      # Чистим только свои папки результатов (allure-results накапливает старьё).
-      # .pytest_cache НЕ трогаем: у неё бывает чужой ACL (Access denied даже на
-      # листинг), а благодаря clean:false и -p no:cacheprovider она и не мешает.
-      # Шаг намеренно неубиваемый — любые ошибки глушим, чтобы не ронять job.
+      # На self-hosted Windows один из прошлых прогонов оставил .pytest_cache с
+      # ACL, который запрещает раннеру её удалять — и об неё спотыкается checkout,
+      # когда пересоздаёт workspace ("Deleting the contents ..."). Пока каталог
+      # физически не удалён, checkout падает при любых настройках. Забираем
+      # владельца (takeown), сбрасываем права (icacls) и сносим (rd). Всё
+      # best-effort; в конце exit 0, чтобы шаг не уронил job из-за кода native-команд.
       - name: Clean leftover artifacts (self-hosted)
         shell: powershell
         run: |
           $ws = "${{ github.workspace }}"
+
+          $pc = Join-Path $ws ".pytest_cache"
+          if (Test-Path $pc) {
+            cmd /c "takeown /f `"$pc`" /r /d y" | Out-Null
+            cmd /c "icacls `"$pc`" /reset /t /c /q" | Out-Null
+            cmd /c "rd /s /q `"$pc`"" | Out-Null
+            if (Test-Path $pc) {
+              Write-Host "ВНИМАНИЕ: .pytest_cache не удалилась автоматически — удалите её вручную с правами администратора на раннере."
+            } else {
+              Write-Host ".pytest_cache удалена."
+            }
+          }
+
+          # Свои папки результатов чистим на случай, когда checkout их не трогает.
           foreach ($dir in @("allure-results", "allure-report")) {
             $path = Join-Path $ws $dir
             if (Test-Path $path) {
-              try {
-                Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue |
-                  ForEach-Object { try { $_.Attributes = 'Normal' } catch {} }
-                Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
-              } catch {
-                Write-Host "Пропускаю $dir : $($_.Exception.Message)"
-              }
+              Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
             }
           }
+
+          exit 0
 
       - name: Checkout code
         uses: actions/checkout@v4
