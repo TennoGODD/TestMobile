@@ -9,18 +9,25 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # На self-hosted Windows папки-артефакты от прошлого прогона (особенно
-      # .pytest_cache) бывают залочены/read-only, из-за чего git clean в checkout
-      # падает с EPERM. Чистим их сами, сняв атрибут «только чтение».
+      # На self-hosted Windows артефакты от прошлого прогона мешают checkout'у.
+      # Чистим только свои папки результатов (allure-results накапливает старьё).
+      # .pytest_cache НЕ трогаем: у неё бывает чужой ACL (Access denied даже на
+      # листинг), а благодаря clean:false и -p no:cacheprovider она и не мешает.
+      # Шаг намеренно неубиваемый — любые ошибки глушим, чтобы не ронять job.
       - name: Clean leftover artifacts (self-hosted)
         shell: powershell
         run: |
           $ws = "${{ github.workspace }}"
-          foreach ($dir in @(".pytest_cache", "allure-results", "allure-report")) {
+          foreach ($dir in @("allure-results", "allure-report")) {
             $path = Join-Path $ws $dir
             if (Test-Path $path) {
-              Get-ChildItem $path -Recurse -Force | ForEach-Object { $_.Attributes = 'Normal' }
-              Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+              try {
+                Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue |
+                  ForEach-Object { try { $_.Attributes = 'Normal' } catch {} }
+                Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+              } catch {
+                Write-Host "Пропускаю $dir : $($_.Exception.Message)"
+              }
             }
           }
 
