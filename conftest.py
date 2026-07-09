@@ -27,8 +27,6 @@ _precreated_tasks = {}
 _precreate_errors = {}
 
 
-# Категории для вкладки Categories в Allure — группируют падения по типу.
-# messageRegex матчится по (уже укороченному) сообщению об ошибке.
 ALLURE_CATEGORIES = [
     {
         "name": "Проблема с подключением к серверу",
@@ -96,13 +94,33 @@ def pytest_configure(config):
         _write_allure_metadata(alluredir)
 
 
-def pytest_collection_modifyitems(config, items):
-    """Заранее (на этапе сборки) создаёт задания для тестов с маркером task.
+# Порядок файлов в прогоне: сначала быстрые тесты без заданий (настройки,
+# информация по коду), затем сериализация. Пока идут первые, задания для
+# сериализации (создаются ниже на этапе сборки) успевают дозреть до статуса 6,
+# и фикстура task почти не ждёт. Файлы вне списка идут в конце.
+_FILE_ORDER = ["test_settings.py", "test_code_information.py", "test_serialization.py"]
 
-    Создаются только реально собранные тесты (с учётом -k/-m), поэтому лишних
-    заданий не будет. Пока идут первые тесты, эти задания дозревают до статуса
-    «готово» параллельно — фикстура task потом почти не ждёт.
+
+def _file_order_key(item):
+    # nodeid всегда через "/", независимо от ОС: "tests/test_settings.py::..."
+    filename = item.nodeid.split("::", 1)[0].rsplit("/", 1)[-1]
+    try:
+        return _FILE_ORDER.index(filename)
+    except ValueError:
+        return len(_FILE_ORDER)
+
+
+def pytest_collection_modifyitems(config, items):
+    """Упорядочивает тесты и заранее (на этапе сборки) создаёт задания для тестов
+    с маркером task.
+
+    Сортировка по _FILE_ORDER — стабильная, поэтому внутри каждого файла тесты
+    остаются в порядке определения. Задания создаются только для реально собранных
+    тестов (с учётом -k/-m). Пока идут первые тесты, эти задания дозревают до
+    статуса «готово» параллельно — фикстура task потом почти не ждёт.
     """
+    items.sort(key=_file_order_key)
+
     if config.getoption("--collect-only"):
         return  # при сборке без запуска не трогаем API
 

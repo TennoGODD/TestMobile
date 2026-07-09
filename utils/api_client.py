@@ -76,11 +76,7 @@ class DmcApiClient:
         return taskid
 
     def create_task_by_spec(self, gtin: str, line: int, amount: int, aggr_ids: list = None) -> int:
-        """Единая точка создания задания по «рецепту» из маркера @pytest.mark.task.
 
-        aggr_ids=None → без агрегации, [id0] → агрегация 0 уровня,
-        [id0, id1] → двухуровневая агрегация.
-        """
         levels = f", агрегация {aggr_ids}" if aggr_ids else ""
         with shared_step(f"Создание задания через API: gtin = {gtin}, количество КМ = {amount}{levels}"):
             return self._create_task(gtin, line, amount, aggr_ids=aggr_ids)

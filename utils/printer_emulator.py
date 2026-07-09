@@ -18,9 +18,15 @@ import time
 
 
 class PrinterEmulator:
-    # код агрегата идёт в TSPL после префикса ~1, например
-    # "~10107665585002196068080726XQU3fBqM" → 0107665585002196068080726XQU3fBqM
+
     _CODE_RE = re.compile(r'~1([^"\r\n]+)')
+
+    _ESCAPE_RE = re.compile(r'~1|~d(\d{3})')
+
+    @staticmethod
+    def _unescape(match):
+        digits = match.group(1)
+        return chr(int(digits)) if digits is not None else "\x1d"
 
     def __init__(self, host: str = "0.0.0.0", port: int = 9103):
         self.host = host
@@ -111,7 +117,7 @@ class PrinterEmulator:
         if not match:
             return None
         code = match.group(1)
-        # внутренние ~1 (FNC1/GS1-разделитель в TSPL) → байт GS (\x1d), как на
-        # реальной этикетке: у КИГУ это разделитель между unit_id и криптохвостом,
-        # у КИТУ таких вставок нет — код остаётся как есть.
-        return code.replace("~1", "\x1d")
+        # Раскодируем TSPL-escape'ы данных: ~1 (разделитель unit_id/криптохвост у
+        # КИГУ) → GS \x1d, а ~dNNN → реальный символ (например ~d034 → "). Без
+        # этого криптохвосты со спецсимволами уезжали в скан искажёнными.
+        return cls._ESCAPE_RE.sub(cls._unescape, code)
