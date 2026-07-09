@@ -265,7 +265,11 @@ def pytest_runtest_makereport(item, call):
                 name="screenshot_on_fail",
                 attachment_type=allure.attachment_type.PNG
             )
-            testit.addAttachments("screenshot_on_fail.png", screenshot)
+            # is_text=True здесь означает «приложить содержимое из памяти, а не
+            # путь к файлу»; байты PNG записываются как есть (см. convert_body_of_attachment).
+            # Если передать (name, bytes) позиционно, bytes попадут в is_text, а имя
+            # файла — в data, и в TestIT уедет текстовый файл с текстом имени.
+            testit.addAttachments(screenshot, is_text=True, name="screenshot_on_fail.png")
 
         excinfo = call.excinfo
         if excinfo:

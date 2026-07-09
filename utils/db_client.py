@@ -101,6 +101,23 @@ class DatabaseClient:
                 return False
             time.sleep(poll_interval)
 
+    def wait_for_aggregate_count(self, taskid: int, target_status: int, level: int, expected_count: int,
+                                 timeout: int = 5, poll_interval: float = 0.5) -> bool:
+        """Ждёт, пока число агрегатов заданного уровня в нужном статусе достигнет expected_count.
+
+        Нужно, когда агрегатов одного уровня несколько (например, два КИГУ):
+        проверка «есть хотя бы один в статусе 30» сработала бы уже после первого,
+        поэтому сверяем именно количество. Возвращает True/False (не бросает).
+        """
+        start_time = time.monotonic()
+        query = "SELECT COUNT(*) FROM aggregates WHERE taskid = %s AND level = %s AND status = %s;"
+        while True:
+            if self._fetchone(query, (taskid, level, target_status))[0] >= expected_count:
+                return True
+            if time.monotonic() - start_time > timeout:
+                return False
+            time.sleep(poll_interval)
+
     def get_printed_aggregate(self, taskid: int, level: int = 0, exclude_unit_id: str = None,
                               timeout: int = 10, poll_interval: float = 0.5) -> tuple:
         """Возвращает (unit_id, криптохвост dm_93) агрегата в статусе «Распечатан» (20).

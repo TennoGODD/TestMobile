@@ -152,7 +152,6 @@ class TestSerialization:
                 scanned_in_aggr="1из6", completed_aggr="0из2"
             )
 
-        # 4. Сканировать КМ 2-5
         for i in range(1, 5): 
             code = codes[i]
             with shared_step(f"Сканируем код №{i + 1}: {code}"):
@@ -161,26 +160,29 @@ class TestSerialization:
                     scanned_in_aggr=f"{i + 1}из6", completed_aggr="0из2"
                 )
 
-        # 5. Последний КМ первой партии (6-й)
         last_code_first = codes[5]
         with shared_step(f"Сканируем код №6: {last_code_first}"):
             serialization_page.emulate_scan(last_code_first)
 
-        # 6. Окно контрольной печати для первого агрегата 0
         serialization_page.assert_print_control_dialog_displayed(
             task_number=str(taskid), gtin=WATER.gtin
         )
 
-        # 7. Сканировать первый агрегат 0 — КИГУ перехватываем из задания печати
         unit_id_0_first = printer_kigu.wait_for_code(timeout=30)
-        with shared_step(f"Сканируем агрегат 0 №1: {unit_id_0_first}"):
-            serialization_page.emulate_scan(unit_id_0_first)
-            serialization_page.verify_serialization_data(
-                scanned_in_aggr="0из6", completed_aggr="1из2"
+        for attempt in range(1, 3):
+            with shared_step(f"Сканируем агрегат 0 №1 (попытка {attempt}): {unit_id_0_first}"):
+                serialization_page.emulate_scan(unit_id_0_first)
+            if db.wait_for_aggregate_count(taskid, target_status=30, level=0, expected_count=1, timeout=5):
+                break
+        else:
+            raise AssertionError(
+                f"Первый агрегат 0 уровня по заданию {taskid} не перешёл в статус 30 после 2 попыток сканирования"
             )
+        serialization_page.verify_serialization_data(
+            scanned_in_aggr="0из6", completed_aggr="1из2"
+        )
 
-        # 8. Сканировать КМ 7-11 (индексы 6..10), проверяя счётчики
-        for i in range(6, 11):  # i = 6..10 → КМ №7..11
+        for i in range(6, 11): 
             code = codes[i]
             with shared_step(f"Сканируем КМ {i + 1}: {code}"):
                 serialization_page.emulate_scan(code)
@@ -188,7 +190,6 @@ class TestSerialization:
                     scanned_in_aggr=f"{i - 5}из6", completed_aggr="1из2"
                 )
 
-        # 9. Последний КМ второй партии (12-й) – без проверки
         last_code_second = codes[11]
         with shared_step(f"Сканируем КМ 12: {last_code_second}"):
             serialization_page.emulate_scan(last_code_second)
@@ -197,17 +198,21 @@ class TestSerialization:
                 task_number=str(taskid), gtin=WATER.gtin
             )
 
-        # Второй агрегат 0 — снова перехватываем КИГУ из печати (второе задание
-        # печати на порту уровня 0; первое было для КИГУ №1).
         unit_id_0_second = printer_kigu.wait_for_code(previous_count=1, timeout=30)
-        with shared_step(f"Сканируем агрегат 0 №2: {unit_id_0_second}"):
-            serialization_page.emulate_scan(unit_id_0_second)
-
-            serialization_page.assert_print_control_dialog_displayed(
-                task_number=str(taskid), gtin=WATER.gtin
+        for attempt in range(1, 3):
+            with shared_step(f"Сканируем агрегат 0 №2 (попытка {attempt}): {unit_id_0_second}"):
+                serialization_page.emulate_scan(unit_id_0_second)
+            if db.wait_for_aggregate_count(taskid, target_status=30, level=0, expected_count=2, timeout=5):
+                break
+        else:
+            raise AssertionError(
+                f"Второй агрегат 0 уровня по заданию {taskid} не перешёл в статус 30 после 2 попыток сканирования"
             )
 
-        # КИТУ уровня 1 — из отдельного эмулятора печати (порт уровня 1).
+        serialization_page.assert_print_control_dialog_displayed(
+            task_number=str(taskid), gtin=WATER.gtin
+        )
+
         with shared_step("Ожидание печати КИТУ уровня 1"):
             unit_id_1 = printer_kitu.wait_for_code(timeout=30)
 
