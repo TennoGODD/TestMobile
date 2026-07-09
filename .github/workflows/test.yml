@@ -18,21 +18,23 @@ jobs:
       - name: Clean leftover artifacts (self-hosted)
         shell: powershell
         run: |
+          # NB: keep this script ASCII-only. GitHub writes it as UTF-8 without BOM
+          # and Windows PowerShell 5.1 reads it as ANSI, so Cyrillic here breaks parsing.
           $ws = "${{ github.workspace }}"
 
           $pc = Join-Path $ws ".pytest_cache"
           if (Test-Path $pc) {
-            cmd /c "takeown /f `"$pc`" /r /d y" | Out-Null
-            cmd /c "icacls `"$pc`" /reset /t /c /q" | Out-Null
-            cmd /c "rd /s /q `"$pc`"" | Out-Null
+            takeown /f $pc /r /d y | Out-Null
+            icacls $pc /reset /t /c /q | Out-Null
+            Remove-Item $pc -Recurse -Force -ErrorAction SilentlyContinue
             if (Test-Path $pc) {
-              Write-Host "ВНИМАНИЕ: .pytest_cache не удалилась автоматически — удалите её вручную с правами администратора на раннере."
+              Write-Host "WARNING: .pytest_cache not removed automatically - delete it manually as admin on the runner."
             } else {
-              Write-Host ".pytest_cache удалена."
+              Write-Host ".pytest_cache removed."
             }
           }
 
-          # Свои папки результатов чистим на случай, когда checkout их не трогает.
+          # Clean our own result folders in case checkout leaves them (clean: false).
           foreach ($dir in @("allure-results", "allure-report")) {
             $path = Join-Path $ws $dir
             if (Test-Path $path) {
